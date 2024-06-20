@@ -1,0 +1,56 @@
+// Define pin numbers for components
+const int gasSensorPin = A0; // Analog pin for gas sensor
+const int tempSensorPin = A1; // Analog pin for temperature sensor (MQ-2)
+const int buzzerPin = 7; // Digital pin for the buzzer
+const int redLedPin = 8; // Digital pin for the red LED
+const int greenLedPin = 9; // Digital pin for the green LED
+
+// Thresholds for gas and temperature values
+const int gasThreshold = 500; // Adjust this value based on your gas sensor sensitivity
+const int tempThreshold = 50; // Temperature threshold for red LED
+
+void setup() {
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(redLedPin, OUTPUT);
+  pinMode(greenLedPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  // Read values from gas and temperature sensors
+  int gasValue = analogRead(gasSensorPin);
+  int tempValue = analogRead(tempSensorPin);
+
+  // Convert temperature value to Celsius
+  float tempCelsius = (tempValue / 1024.0) * 500; // MQ-2 temperature sensor
+
+  // Print gas and temperature values for debugging
+  Serial.print("Gas Value: ");
+  Serial.print(gasValue);
+  Serial.print(", Temperature (C): ");
+  Serial.println(tempCelsius);
+
+  // Check gas concentration
+  if (gasValue > gasThreshold) {
+    // Gas detected, sound the buzzer
+    digitalWrite(buzzerPin, HIGH);
+    delay(1000); // Buzzer on for 1 second
+    digitalWrite(buzzerPin, LOW);
+  } else {
+    digitalWrite(buzzerPin, LOW);
+  }
+
+  // Check temperature
+  if (tempCelsius > tempThreshold) {
+    // Temperature is above the threshold, turn on the red LED
+    digitalWrite(redLedPin, HIGH);
+    digitalWrite(greenLedPin, LOW);
+  } else {
+    // Temperature is within the normal range, turn on the green LED
+    digitalWrite(greenLedPin, HIGH);
+    digitalWrite(redLedPin, LOW);
+  }
+
+  delay(1000); // Delay for 1 second before reading sensors again
+}
+
